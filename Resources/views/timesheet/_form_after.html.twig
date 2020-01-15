@@ -1,0 +1,231 @@
+{% if formOptions.is_admin_form is same as(true) %}
+    {% set form_prefix = 'timesheet_admin_edit_form_' %}
+{% else %}
+    {% set form_prefix = 'timesheet_edit_form_' %}
+{% endif %}
+
+{% block form_after %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.endtime-field').after('<div class="btn btn-default btn-xs input-group-addon add-on clear-endtime"">×</div>');
+
+            var is_mobile = mediaQueryVisible(['xs']);
+            // var is_mobile = mediaQueryVisible(['xs', 'sm']);
+
+            addTimepicker(is_mobile);
+
+            $(document).on('submit', 'form', function(ev, confirmed) {
+                var ALERT = kimai.getPlugin('alert');
+                var form = $(this);
+
+                var beginField = document.getElementById('{{ form_prefix }}begintime');
+                var endField = document.getElementById('{{ form_prefix }}endtime');
+                var format = endField.dataset.format;
+
+                var momentBegin = moment(beginField.value, format);
+                var momentEnd = moment(endField.value, format);
+
+                console.log(form);
+                if (momentEnd.isBefore(momentBegin)) {
+                    if (!confirmed) {
+                        ev.preventDefault();
+
+                        var message = '{{ 'alert.starttime-higher-than-endtime'|trans }}';
+                        ALERT.question(message, function (value) {
+                            if (value === true) {
+                                form.trigger('submit', true);
+                            }
+                        });
+                    }
+                }
+
+            });
+
+        });
+
+
+        function addTimepicker(is_mobile) {
+
+            var timepicker_defaults = {
+                'step': 15,
+                'scrollDefault': 'now',
+                'timeFormat': 'H:i',
+                'maxTime': '23:45',
+                'noneOption': '-- : --',
+            };
+
+            if (!is_mobile) { // desktop
+                $('input[type="time"]').timepicker(timepicker_defaults).on('keydown', function (e) {
+
+                    // do not hide timepicker-dropdown if arrow up/down/left/right is pressed
+                    if ($.inArray(e.keyCode, [38, 40, 39, 41]) === -1) {
+                        $(this).timepicker('hide');
+                    }
+
+                    // if enter button is pressed - do not submit form and focus on next input element
+                    if (e.keyCode === 13) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        var inputs = $(this).closest('form').find(':input');
+                        inputs.eq(inputs.index($(this)) + 1).focus();
+                    }
+                });
+                $('body').on('changeTime', '#{{ form_prefix }}begintime', function () {
+                    $('#{{ form_prefix }}endtime').timepicker('option', {
+                        'scrollDefault': $(this).val()
+                    });
+                });
+            } else {
+                // mobile
+                // $('input[type="time"]').timepicker(timepicker_defaults)
+                // $('input[type="time"]').timepicker('option', { useSelect: true });
+                // $('.ui-timepicker-select').addClass('form-control');
+            }
+        }
+
+        $('body').on('click', '.clear-endtime', function(ev) {
+            ev.preventDefault();
+            $('#{{ form_prefix }}endtime').val('');
+        });
+
+
+    </script>
+    {#{% if form.begin is defined and form.end is defined and form.duration is defined %}#}
+        <script type="text/javascript">
+            $('body').on('blur change', '#{{ form_prefix }}begin', function(ev) {
+                changedBegin($(this).val());
+            });
+
+            $('body').on('blur change', '#{{ form_prefix }}end', function(ev) {
+                changedEnd($(this).val());
+            });
+
+            $('body').on('blur change', '#{{ form_prefix }}duration', function(ev) {
+                changedDuration($(this).val());
+            });
+
+            {#
+                // Ruleset:
+                // - invalid begin => skip
+                // - empty end => set end to begin (only if duration > 0 = running record)
+                // - invalid end => skip
+                // - calculate duration
+            #}
+
+            function changedBegin(value)
+            {
+                var endField = document.getElementById('timesheet_edit_form_end');
+                var durationField = document.getElementById('timesheet_edit_form_duration');
+                var format = endField.dataset.format;
+                var momentDuration = moment.duration(durationField.value);
+
+                var momentBegin = moment(value, format);
+                if (!momentBegin.isValid()) {
+                    return;
+                }
+
+                if (endField.value === '' && momentDuration.asSeconds() > 0) {
+                    endField.value = value;
+                }
+
+                var momentEnd = moment(endField.value, format);
+                if (!momentEnd.isValid()) {
+                    return;
+                }
+
+                if (momentEnd.isBefore(momentBegin)) {
+                    endField.value = momentBegin.add(momentDuration).format(format);
+                }
+
+                momentBegin = moment(value, format);
+                momentEnd = moment(endField.value, format);
+
+                var durationMoment = moment.duration(momentEnd.diff(momentBegin));
+                var hours = Math.floor(durationMoment.asHours());
+                if (hours < 10) {
+                    hours = '0' + hours;
+                }
+
+                durationField.value = hours + ':' + ('0' + durationMoment.minutes()).slice(-2);
+            }
+
+            {#
+                // Ruleset:
+                // - invalid end => skip
+                // - empty begin => set begin to end
+                // - invalid begin => skip
+                // - calculate duration
+            #}
+
+            function changedEnd(value)
+            {
+                var beginField = document.getElementById('timesheet_edit_form_begin');
+                var durationField = document.getElementById('timesheet_edit_form_duration');
+                var format = beginField.dataset.format;
+                var momentDuration = moment.duration(durationField.value);
+
+                var momentEnd = moment(value, format);
+                if (!momentEnd.isValid()) {
+                    return;
+                }
+
+                if (beginField.value === '') {
+                    beginField.value = value;
+                }
+
+                var momentBegin = moment(beginField.value, format);
+                if (!momentBegin.isValid()) {
+                    return;
+                }
+
+                if (momentEnd.isBefore(momentBegin)) {
+                    beginField.value = momentEnd.subtract(momentDuration).format(format);
+                }
+
+                momentBegin = moment(beginField.value, format);
+                momentEnd = moment(value, format);
+
+                var durationMoment = moment.duration(momentEnd.diff(momentBegin));
+                var hours = Math.floor(durationMoment.asHours());
+                if (hours < 10) {
+                    hours = '0' + hours;
+                }
+
+                durationField.value = hours + ':' + ('0' + durationMoment.minutes()).slice(-2);
+            }
+
+            {#
+                Ruleset:
+                - invalid duration => skip
+                - if begin and end are empty: set begin to now and end to duration
+                - if begin is empty and end is not empty: set begin to end minus duration
+                - if begin is not empty and end is empty and duration is > 0 (running records = 0): set end to begin plus duration
+            #}
+
+            function changedDuration(value)
+            {
+                var momentDuration = moment.duration(value);
+                if (!momentDuration.isValid()) {
+                    return;
+                }
+
+                var beginField = document.getElementById('timesheet_edit_form_begin');
+                var endField = document.getElementById('timesheet_edit_form_end');
+                var format = endField.dataset.format;
+                var begin = beginField.value;
+                var end = endField.value;
+                var duration = momentDuration.asSeconds();
+
+                if (begin === '' && end === '') {
+                    beginField.value = moment().format(format);
+                    endField.value = moment(beginField.value, format).add(duration, 'seconds').format(format);
+                } else if (begin === '' && end !== '') {
+                    beginField.value = moment(end, format).subtract(duration, 'seconds').format(format);
+                } else if (begin !== '' && duration > 0) {
+                    endField.value = moment(beginField.value, format).add(duration, 'seconds').format(format);
+                }
+            }
+        </script>
+    {#{% endif %}#}
+{% endblock %}

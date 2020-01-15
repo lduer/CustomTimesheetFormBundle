@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file date="2020-01-07T20:00:00Z" source-language="en" target-language="en" datatype="plaintext" original="none">
+        <body>
+            <trans-unit id="Custom Forms">
+                <source>Custom Forms</source>
+                <target>Custom Forms</target>
+            </trans-unit>
+            <trans-unit id="alert.starttime-higher-than-endtime">
+                <source>alert.starttime-higher-than-endtime</source>
+                <target>Caution! Inserted start time is higher than the end time! If you click confirm, the date of the next day will be chosen as end date (exceeds midnight). Click on 'cancel' to change the time values.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

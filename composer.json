@@ -1,0 +1,35 @@
+{
+    "name": "lduer/custom-form-plugin",
+    "description": "A Kimai 2 plugin, modifies some form elements in the default forms",
+    "homepage": "https://github.com/lduer",
+    "type": "kimai-plugin",
+    "version": "1.1",
+    "require": {
+        "kimai/kimai2-composer": "*"
+    },
+    "keywords": [
+        "kimai",
+        "kimai-plugin"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "lduer",
+            "email": "duerlukas@gmail.com"
+        }
+    ],
+    "extra": {
+        "kimai": {
+            "require": "1.4",
+            "version": "0.2",
+            "name": "CustomTimesheetFormBundle"
+        }
+    },
+    "scripts": {
+        "codestyle": "vendor/bin/php-cs-fixer fix --dry-run --verbose --show-progress=none",
+        "codestyle-fix": "vendor/bin/php-cs-fixer fix"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.16"
+    }
+}

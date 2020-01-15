@@ -1,0 +1,27 @@
+{% extends app.request.xmlHttpRequest ? 'form.html.twig' : 'base.html.twig' %}
+{% import "macros/widgets.html.twig" as widgets %}
+{% import "timesheet/actions.html.twig" as actions %}
+
+{% block page_title %}{{ 'timesheet.title'|trans }}{% endblock %}
+{% block page_actions %}{{ actions.timesheet(timesheet, 'edit') }}{% endblock %}
+
+{% block main %}
+    {% if timesheet.exported %}
+        {{ widgets.alert('warning', ('timesheet.locked.warning'|trans({}, 'flashmessages')), ('warning'|trans({}, 'flashmessages')), 'warning') }}
+    {% endif %}
+    {% set formEditTemplate = app.request.xmlHttpRequest ? 'default/_form_modal.html.twig' : 'default/_form.html.twig' %}
+    {% set formOptions = {
+        'title': (timesheet.id ? 'timesheet.edit'|trans : 'create'|trans),
+        'form': form,
+        'back': path('timesheet'),
+        'is_admin_form': false
+    } %}
+    {% embed formEditTemplate with formOptions %}
+        {% block form_body %}
+            {{ include('@CustomTimesheetForm/timesheet/_form_body.html.twig', {'formOptions': formOptions }) }}
+        {% endblock %}
+        {% block form_after %}
+            {{ include('@CustomTimesheetForm/timesheet/_form_after.html.twig', {'formOptions': formOptions }) }}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

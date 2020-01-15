@@ -1,0 +1,23 @@
+{% set length = 6 %}
+
+{{ form_row(form.begindate) }}
+
+<div class="row">
+    {% if form.begintime is defined %}
+        <div class="col-md-{{ length }}">
+            {{ form_row(form.begintime) }}
+        </div>
+    {% endif %}
+    {% if form.endtime is defined %}
+        <div class="col-md-{{ length }}">
+            {{ form_row(form.endtime, {'attr': {'class': 'endtime-field'}}) }}
+        </div>
+    {% endif %}
+    {% if form.duration is defined %}
+        <div class="col-md-2 hidden">
+            {{ form_widget(form.duration) }}
+        </div>
+    {% endif %}
+</div>
+
+{{ form_widget(form) }}
