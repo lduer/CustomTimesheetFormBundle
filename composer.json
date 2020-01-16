@@ -1,6 +1,6 @@
 {
-    "name": "lduer/custom-form-plugin",
-    "description": "A Kimai 2 plugin, modifies some form elements in the default forms",
+    "name": "lduer/custom-timesheet-form-plugin",
+    "description": "A Kimai 2 plugin, modifies the timesheet form.",
     "homepage": "https://github.com/lduer",
     "type": "kimai-plugin",
     "version": "1.1",
