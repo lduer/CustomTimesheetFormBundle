@@ -5,6 +5,12 @@
 {% endif %}
 
 {% block form_after %}
+    <style>
+        {# fix style for bootstrap form field #}
+        .ui-timepicker-input {
+            line-height: 1.42857 !important;
+        }
+    </style>
 
     <script type="text/javascript">
         $(document).ready(function () {
