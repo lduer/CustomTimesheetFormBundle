@@ -53,16 +53,6 @@ class TimesheetEditForm extends TimesheetEditFormBase
             function (FormEvent $event) {
                 /** @var Timesheet $data */
                 $data = $event->getData();
-//                $duration = $data->getDuration();
-//                $end = null;
-//                if (null !== $duration) {
-//                    $end = clone $data->getBegin();
-//                    $end->modify('+ ' . $duration . 'seconds');
-//                }
-//                $data->setEnd($end);
-
-                var_dump($data->getBegin());
-                var_dump($data->getEnd());
 
                 $begindate = $event->getForm()->get('begindate')->getData();
                 $begintime = $event->getForm()->get('begintime')->getData();
@@ -84,10 +74,6 @@ class TimesheetEditForm extends TimesheetEditFormBase
 
     protected function addEnd(FormBuilderInterface $builder, array $dateTimeOptions)
     {
-//        $builder->add('enddate', DatePickerType::class, array_merge($dateTimeOptions, [
-//            'label' => 'label.end',
-//            'required' => false,
-//        ]));
         $builder->add('endtime', TimePickerType::class, [
             'widget' => 'single_text',
             'required' => false,
