@@ -105,19 +105,17 @@ class TimesheetEditForm extends TimesheetEditFormBase
                 $begintime = $event->getForm()->get('begintime')->getData();
 
                 if (null !== $endtime) {
-                    if (null === $data->getEnd() && null !== $endtime) {
-                        $data->setEnd($begindate);
+                    // enddate is always begindate
+                    $data->setEnd($begindate);
 
-                        if (null != $endtime) {
-                            $data->getEnd()->setTime($endtime->format('H'), $endtime->format('i'), $endtime->format('s'));
-                        }
-                    }
+                    $data->getEnd()->setTime($endtime->format('H'), $endtime->format('i'), $endtime->format('s'));
 
                     if ($endtime->getTimestamp() < $begintime->getTimestamp()) {
-                        $data->getEnd()->modify('+ 1 day'); // add(new \DateInterval('P1D'));
-
-                        // TODO set enddate next day!!!
+                        // add +1 day to begindate
+                        $data->getEnd()->modify('+ 1 day');
                     }
+                } else {
+                    $data->setEnd(null);
                 }
             }
         );
