@@ -20,34 +20,6 @@
             // var is_mobile = mediaQueryVisible(['xs', 'sm']);
 
             addTimepicker(is_mobile);
-
-            $(document).on('submit', 'form', function(ev, confirmed) {
-                var ALERT = kimai.getPlugin('alert');
-                var form = $(this);
-
-                var beginField = document.getElementById('{{ form_prefix }}begintime');
-                var endField = document.getElementById('{{ form_prefix }}endtime');
-                var format = endField.dataset.format;
-
-                var momentBegin = moment(beginField.value, format);
-                var momentEnd = moment(endField.value, format);
-
-                console.log(form);
-                if (momentEnd.isBefore(momentBegin)) {
-                    if (!confirmed) {
-                        ev.preventDefault();
-
-                        var message = '{{ 'alert.starttime-higher-than-endtime'|trans }}';
-                        ALERT.question(message, function (value) {
-                            if (value === true) {
-                                form.trigger('submit', true);
-                            }
-                        });
-                    }
-                }
-
-            });
-
         });
 
 
@@ -95,6 +67,52 @@
             $('#{{ form_prefix }}endtime').val('');
         });
 
+        {% if app.request.xmlHttpRequest %}
+            var form_identifier_modal = '#remote_form_modal .modal-content form';
+
+            $(form_identifier_modal).on('submit', function(ev, confirmed) {
+                doFormSubmitChecks(form_identifier_modal, ev, confirmed);
+            });
+        {% else %}
+            var form_identifier = '.content form';
+            $(form_identifier).on('submit', function(ev, confirmed) {
+                doFormSubmitChecks(form_identifier, ev,confirmed);
+            });
+        {% endif %}
+
+        function doFormSubmitChecks(form_identifier, ev, confirmed) {
+            if (!confirmed) {
+                ev.preventDefault();
+                ev.stopPropagation();
+            }
+
+            var ALERT = kimai.getPlugin('alert');
+            var form = $(form_identifier);
+
+            var beginField = document.getElementById('{{ form_prefix }}begintime');
+            var endField = document.getElementById('{{ form_prefix }}endtime');
+            var format = endField.dataset.format;
+
+            var momentBegin = moment(beginField.value, format);
+            var momentEnd = moment(endField.value, format);
+
+            if (momentEnd.isBefore(momentBegin)) {
+
+                if (!confirmed) {
+
+                    var message = '{{ 'alert.starttime-higher-than-endtime'|trans }}';
+                    ALERT.question(message, function (value) {
+                        if (value === true) {
+                            form.trigger('submit', true);
+                        } else {
+                            // ractivate submit button
+                            const btn = $(' button[type=submit]');
+                            btn.button('reset');
+                        }
+                    });
+                }
+            }
+        }
 
     </script>
         <script type="text/javascript">
