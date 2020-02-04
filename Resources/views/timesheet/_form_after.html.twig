@@ -56,9 +56,25 @@
                 });
             } else {
                 // mobile
-                // $('input[type="time"]').timepicker(timepicker_defaults)
-                // $('input[type="time"]').timepicker('option', { useSelect: true });
-                // $('.ui-timepicker-select').addClass('form-control');
+
+                // disable all select fields on this page
+                // TODO: Check if there is a bug in the kimai-js-file: whitespace needed or not?
+                // TMP: Copied from KimaiFormSelect.js
+                function destroySelectPicker(selector) {
+                    this.selector = '.selectpicker';
+                    jQuery(selector + '' + this.selector).select2('destroy');
+                }
+
+                // const KimaiFormSelect = kimai.getPlugin('form-select');
+
+                destroySelectPicker('#{{ form_prefix }}customer');
+                destroySelectPicker('#{{ form_prefix }}activity');
+                destroySelectPicker('#{{ form_prefix }}project');
+
+                // // disable fields
+                $('#{{ form_prefix }}begindate').prop('readOnly', true);
+                $('#{{ form_prefix }}begintime').prop('readOnly', true);
+                $('#{{ form_prefix }}endtime').prop('readOnly', true);
             }
         }
 
