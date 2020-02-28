@@ -54,20 +54,15 @@ class TimesheetEditForm extends TimesheetEditFormBase
                 /** @var Timesheet $data */
                 $data = $event->getData();
 
-                $begindate = $event->getForm()->get('begindate')->getData();
-                $begintime = $event->getForm()->get('begintime')->getData();
+                $begindate = clone $event->getForm()->get('begindate')->getData();
+                $begintime = clone $event->getForm()->get('begintime')->getData();
 
-                if (null !== $begindate) {
-                    if (null === $data->getBegin()) {
-                        $data->setBegin($begindate);
-                    } else {
-                        $data->getBegin()->setDate($begindate->format('Y'), $begindate->format('m'), $begindate->format('d'));
-                    }
-
-                    if (null !== $begintime) {
-                        $data->getBegin()->setTime($begintime->format('H'), $begintime->format('i'), $begintime->format('s'));
-                    }
+                if ($begintime === null) {
+                    return;
                 }
+
+                $data->setBegin($begindate);
+                $data->getBegin()->setTime($begintime->format('H'), $begintime->format('i'));
             }
         );
     }
@@ -100,22 +95,24 @@ class TimesheetEditForm extends TimesheetEditFormBase
                 /** @var Timesheet $data */
                 $data = $event->getData();
 
-                $endtime = $event->getForm()->get('endtime')->getData();
-                $begindate = $event->getForm()->get('begindate')->getData();
-                $begintime = $event->getForm()->get('begintime')->getData();
+                $endtime = clone $event->getForm()->get('endtime')->getData();
+                $begindate = clone $event->getForm()->get('begindate')->getData();
+                $begintime = clone $event->getForm()->get('begintime')->getData();
 
-                if (null !== $endtime) {
-                    // enddate is always begindate
-                    $data->setEnd($begindate);
-
-                    $data->getEnd()->setTime($endtime->format('H'), $endtime->format('i'), $endtime->format('s'));
-
-                    if ($endtime->getTimestamp() < $begintime->getTimestamp()) {
-                        // add +1 day to begindate
-                        $data->getEnd()->modify('+ 1 day');
-                    }
-                } else {
+                $data->setEnd(null);
+                if ($endtime === null) {
                     $data->setEnd(null);
+                    return;
+                }
+
+                // enddate is always begindate
+                $data->setEnd($begindate);
+
+                $data->getEnd()->setTime($endtime->format('H'), $endtime->format('i'));
+
+                if ($endtime->getTimestamp() < $begintime->getTimestamp()) {
+                    // add +1 day to begindate
+                    $data->getEnd()->modify('+ 1 day');
                 }
             }
         );
