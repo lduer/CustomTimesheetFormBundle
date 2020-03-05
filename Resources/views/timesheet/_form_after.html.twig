@@ -95,10 +95,6 @@
         {% endif %}
 
         function doFormSubmitChecks(form_identifier, ev, confirmed) {
-            if (!confirmed) {
-                ev.preventDefault();
-                ev.stopPropagation();
-            }
 
             var ALERT = kimai.getPlugin('alert');
             var form = $(form_identifier);
@@ -113,13 +109,17 @@
             if (momentEnd.isBefore(momentBegin)) {
 
                 if (!confirmed) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    // TODO: stop submit of KimaiAjaxModalForm
+                    // maybe a contribution to KimaiAjaxModalForm.js is needed?
 
                     var message = '{{ 'alert.starttime-higher-than-endtime'|trans }}';
                     ALERT.question(message, function (value) {
                         if (value === true) {
                             form.trigger('submit', true);
                         } else {
-                            // ractivate submit button
+                            // reactivate submit button
                             const btn = $(' button[type=submit]');
                             btn.button('reset');
                         }
