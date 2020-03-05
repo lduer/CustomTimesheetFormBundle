@@ -16,6 +16,7 @@ use KimaiPlugin\CustomTimesheetFormBundle\Form\Type\TimePickerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Defines the form used to manipulate Timesheet entries.
@@ -26,12 +27,18 @@ class TimesheetEditForm extends TimesheetEditFormBase
     {
         $builder->add('begindate', DatePickerType::class, array_merge($dateTimeOptions, [
             'label' => 'label.date',
-            'mapped' => false
+            'mapped' => false,
+            'constraints' => [
+                new NotBlank()
+            ]
         ]));
         $builder->add('begintime', TimePickerType::class, [
             'widget' => 'single_text',
             'label' => 'label.starttime',
-            'mapped' => false
+            'mapped' => false,
+            'constraints' => [
+                new NotBlank()
+            ]
         ]);
 
         $builder->addEventListener(
@@ -54,12 +61,12 @@ class TimesheetEditForm extends TimesheetEditFormBase
                 /** @var Timesheet $data */
                 $data = $event->getData();
 
-                $begindate = clone $event->getForm()->get('begindate')->getData();
-                $begintime = clone $event->getForm()->get('begintime')->getData();
-
-                if ($begintime === null) {
+                if ($event->getForm()->get('begindate')->getData() === null || $event->getForm()->get('begintime')->getData() === null) {
                     return;
                 }
+
+                $begindate = clone $event->getForm()->get('begindate')->getData();
+                $begintime = clone $event->getForm()->get('begintime')->getData();
 
                 $data->setBegin($begindate);
                 $data->getBegin()->setTime($begintime->format('H'), $begintime->format('i'));
@@ -95,15 +102,14 @@ class TimesheetEditForm extends TimesheetEditFormBase
                 /** @var Timesheet $data */
                 $data = $event->getData();
 
+                $data->setEnd(null);
+                if ($event->getForm()->get('endtime')->getData() === null) {
+                    return;
+                }
+
                 $endtime = clone $event->getForm()->get('endtime')->getData();
                 $begindate = clone $event->getForm()->get('begindate')->getData();
                 $begintime = clone $event->getForm()->get('begintime')->getData();
-
-                $data->setEnd(null);
-                if ($endtime === null) {
-                    $data->setEnd(null);
-                    return;
-                }
 
                 // enddate is always begindate
                 $data->setEnd($begindate);
