@@ -22,9 +22,10 @@ in the following additional ** Contents:**
   search field, the select-list is modified, browsers are doing weird stuff (jumping up and down, no display of 
   select-list, you need to hide the keyboard to see the list again, only 3-4 entries displayed, you need to scroll up/down )   
 
-## Screenshot
+## Screenshots
 
-![Screenshot](./screenshot.png)
+![Screenshot](screenshot.png)
+![Screenshot2](screenshot2.png)
 
 ## Installation
 
