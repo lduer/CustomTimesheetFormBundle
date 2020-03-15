@@ -124,6 +124,11 @@ class TimesheetEditForm extends TimesheetEditFormBase
         );
     }
 
+    protected function addDuration(FormBuilderInterface $builder)
+    {
+        return;
+    }
+
     protected function addExported(FormBuilderInterface $builder, array $options)
     {
         return;

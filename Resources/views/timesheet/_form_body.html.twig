@@ -13,11 +13,6 @@
             {{ form_row(form.endtime, {'attr': {'class': 'endtime-field'}}) }}
         </div>
     {% endif %}
-    {% if form.duration is defined %}
-        <div class="col-md-2 hidden">
-            {{ form_widget(form.duration) }}
-        </div>
-    {% endif %}
 </div>
 
 {{ form_widget(form) }}
