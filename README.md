@@ -46,10 +46,3 @@ And then rebuild the cache:
 bin/console cache:clear
 bin/console cache:warmup
 ```
-
-
-
-## TODO
-
-- make the time-interval (minutes) configuratble, as suggested in https://github.com/kevinpapst/kimai2/issues/1171
--- or read from rounding (default used method)
