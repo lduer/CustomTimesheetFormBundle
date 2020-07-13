@@ -124,13 +124,39 @@ class TimesheetEditForm extends TimesheetEditFormBase
         );
     }
 
+    /**
+     * @param FormBuilderInterface $builder
+     */
     protected function addDuration(FormBuilderInterface $builder)
     {
+        // do not render duration field
         return;
     }
 
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     */
+    protected function addUser(FormBuilderInterface $builder, array $options)
+    {
+        // "addUser()" is called after all date/time/duration fields.
+        // this is a fix for removing the duration field
+        //  - the insertion of duration field is added always when ($options['allow_begin_datetime'] && $options['allow_end_datetime'])
+
+        if ($builder->has('duration')) {
+            $builder->remove('duration');
+        }
+
+        return parent::addUser($builder, $options);
+    }
+
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     */
     protected function addExported(FormBuilderInterface $builder, array $options)
     {
+        // do not render export field
         return;
     }
 }
